@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Seth Leonard," />
+
+<meta name="date" content="2021-11-09" />
+
+<title>Introduction to dateutils</title>
+
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+code.sourceCode > span { display: inline-block; line-height: 1.25; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to dateutils</h1>
+<h4 class="author">Seth Leonard,</h4>
+<h4 class="date">2021-11-09</h4>
+
+
+
+<p><strong>dateutils</strong> is an R package for conveniently working with time series data in tabular format, that is, without using one of the may R time series formats such as <code>ts</code> or <code>xts</code>. <strong>dateutils</strong> is built on top of <strong>data.table</strong>.</p>
+<div id="non-technical-overview" class="section level1">
+<h1>Non-Technical Overview</h1>
+<p>The main functions of <strong>dateutils</strong> are for aggregating and formatting time series data, including mixed frequency data. This latter functionality is particularly useful as it allows the incorporation of mixed frequency data into standard econometric and machine learning models, without the hassle of explicit bridge equations.</p>
+</div>
+<div id="getting-started" class="section level1">
+<h1>Getting Started</h1>
+<p>To give a few examples of using <strong>dateutils</strong>, we will use the built in data.table named <code>fred</code>, containing daily (t bill spreads), weekly (initial jobless claims), monthly (advance retail sales), and quarterly (gdp) data in long format. To view the data use <code>View(fred)</code>. We can begin by aggregating this data to the lowest frequency, quarterly in this case.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">library</span>(dateutils)</span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(data.table)</span>
+<span id="cb1-3"><a href="#cb1-3"></a>fred_quarterly &lt;-<span class="st"> </span><span class="kw">agg_to_freq</span>(fred, <span class="dt">frq =</span> <span class="st">&quot;quarter&quot;</span>)</span>
+<span id="cb1-4"><a href="#cb1-4"></a><span class="kw">print</span>(fred_quarterly[<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>])</span></code></pre></div>
+<pre><code>##      ref_date          series_name    value n_obs
+## 1: 2000-03-31 advance retail sales 246798.0     3
+## 2: 2000-06-30 advance retail sales 246730.7     3
+## 3: 2000-09-30 advance retail sales 248863.0     3
+## 4: 2000-12-31 advance retail sales 250736.7     3
+## 5: 2001-03-31 advance retail sales 251895.3     3</code></pre>
+<p>Note that dates are indexed to the end of the quarter. <code>agg_to_frq()</code> also includes the column <code>n_obs</code> giving the number of observations which were used to calculate mean values for the quarter. We could, alternatively, create a mixed frequency data set by aggregating to monthly. If we wanted the data in wide format, we could then use the <strong>data.table</strong> function <code>dcast()</code>, or simply call <code>agg_to_frq_wide()</code>.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>fred_monthly_wide &lt;-<span class="st"> </span><span class="kw">agg_to_freq_wide</span>(fred, <span class="dt">frq =</span> <span class="st">&quot;month&quot;</span>)</span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">print</span>(fred_monthly_wide<span class="op">$</span>dt[<span class="dv">1</span><span class="op">:</span><span class="dv">6</span>])</span></code></pre></div>
+<pre><code>##      ref_date advance retail sales gdp constant prices initial jobless claims
+## 1: 2000-01-31               243436                  NA                 289000
+## 2: 2000-02-29               247133                  NA                 293750
+## 3: 2000-03-31               249825            12924.18                 273000
+## 4: 2000-04-30               245831                  NA                 273000
+## 5: 2000-05-31               246201                  NA                 282250
+## 6: 2000-06-30               248160            13160.84                 289000
+##    t bill spread 10y 3m
+## 1:            1.1620000
+## 2:            0.7925000
+## 3:            0.3926087
+## 4:            0.1689474
+## 5:            0.4459091
+## 6:            0.2354545</code></pre>
+<div id="seasonal-adjustment" class="section level2">
+<h2>Seasonal Adjustment</h2>
+<p><strong>dateutils</strong> works with the package <strong>seasonal</strong> to seasonally adjust monthly and quarterly data in <code>data.table</code> format. For example, suppose we wanted to seasonally adjust gdp and advance retail sales in our quarterly dataset. We can do so as follows:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fred_sa &lt;-<span class="st"> </span><span class="kw">seas_df_long</span>(fred_quarterly, <span class="dt">sa_names =</span> <span class="kw">c</span>(<span class="st">&quot;gdp constant prices&quot;</span>, <span class="st">&quot;advance retail sales&quot;</span>),</span>
+<span id="cb5-2"><a href="#cb5-2"></a>                        <span class="dt">transfunc =</span> <span class="st">&#39;auto&#39;</span>)</span></code></pre></div>
+<pre><code>## Model used in SEATS is different: (1 2 3)(0 0 1)</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>gdp &lt;-<span class="st"> </span><span class="kw">rbind</span>(fred_quarterly[series_name <span class="op">==</span><span class="st"> &quot;gdp constant prices&quot;</span>, .(ref_date, series_name, value)],</span>
+<span id="cb7-2"><a href="#cb7-2"></a>             fred_sa<span class="op">$</span>values_sa[series_name <span class="op">==</span><span class="st"> &quot;gdp constant prices sa&quot;</span>])</span>
+<span id="cb7-3"><a href="#cb7-3"></a>gdp &lt;-<span class="st"> </span><span class="kw">dcast</span>(gdp, ref_date <span class="op">~</span><span class="st"> </span>series_name, <span class="dt">value.var =</span> <span class="st">&quot;value&quot;</span>)</span>
+<span id="cb7-4"><a href="#cb7-4"></a><span class="kw">matplot</span>(gdp<span class="op">$</span>ref_date, gdp[,<span class="op">-</span><span class="dv">1</span>,<span class="dt">with=</span><span class="ot">FALSE</span>], <span class="dt">type =</span> <span class="st">&#39;l&#39;</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAclBMVEUAAAAAADoAAGYAOpAAZrY6AAA6ADo6AGY6OpA6ZmY6kNtmAABmADpmOpBmkJBmtv+QOgCQOmaQkGaQtpCQ2/+2ZgC2Zma2tma225C2/7a2///bkDrb25Db2//b/7bb///fU2v/tmb/25D//7b//9v////4s3UmAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAKCElEQVR4nO2da2ObNhiFaRp3W7IuWVfvUrYWJ+H//8UhCTAXWUdIryyZnOdDih0Q8FSXFyEpVUucVLkvoHQoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBDACHp9rKbcfct8VQUxCHqafHeioDMUBGAdBFjlIGafORNBb88PLQUtoSAABQEoCEBBAAoCUBBg/SxGQTMYSQMoCDAIejl0FdCpqj58zXo55dELejk8KT9PZoOc6QUd79UPVT/rLTIytGIPqplXbtjMz5nEQdoSBS2YCDLVT/3xR94rKoxJHVSrFsyUMzLSCzp9+Pr6qPLOkSVszhAHdSFQ5+flwAK2QDiSrm6GXIJkk0tHuKC4Zp6CpM6bGwpaUTk+eR/W7ldQ1cw/eh+3/GKngroLaxafvQ+cs09B6rpiBMX2SW8PL65Lo+VMDTEOmtKbmV5cuKC333dXxIacIyGojnztU6SgavHvctvrYEX3wBrbaV+goHO9aHJSNfnpc/iwYerph9iriTxenGZSM+vN/gq3Cjp2cu77TtcYShPUrD6ECeqH4O1O0CJ6buz1kZOhR3GXOWh5NY29RfNM47i7Omh1MVWUIFNP76kVExfU6qK2mzhofS0Cgjr+dAh6ewbPawUJaqxfCQhyUA911OlSZVWOoMZyKc35+sKaeYAZo6e59P61IEHW76IETe7fjseEhWIE2fwkF3RDOai6IGj8Oomgrg7qs9CyDiqtw+zCZVSpBY09jxdfUJchyJp92msI8kwuM5f8UJDhop+oOsiv0/4GAkV79WwIb8U8KT9QdLcSTZVWUPnNfOPIPvr341YSQcUHikBPckFF56CuZoR+Ugu6HCiGJScJljPfK42gcgNFPz9xgtQw6WPsGE4K8k7uqnj6mZBIUKmB4vbTphFUaKAY0oeQRFChzfz28tUmEnQ5UMzZHxTk5z3loKsJ8qDEQDHMzzsKFMsSdO3k0p2QgqSO29bdAQPt6wpqbK9P/Ugk6JcD6La+qqDA6kcTIAg+RujxVXXlnNN6TUExfoIGUMFxL/288crh6IqC4k61XZDH8Ltxl8ujiK4lqImN2UMEwQEeHg6vJCiqdGm2C/KYMF+MIPTywoPAZ7HrnTf8DD6d8x7JbNtRbImu5IIk5Cj2GklL+QmppH81A4CDZhxeqz9IzE+EoNoVKMKCmFaQnJ/Ngo7nW3e0VG/PKHulFSSYengOcgJjgYSComPDGakq6VPljgWi70ElYClJjWTxGs4ju+N1kqu0ilUqlbSf7XHQw1gDZ4yDqiH/LJJJUHBvMgc1lq31JxluUVBj3UzjJ+hp3t0VJnzeJc3sAXTalZrET0gO6iuhuBl1Un3ooxWBB3evE3rv+PqYo5JeHdYs/hUnTFD8nMwQQY0tl1TByfkR1B8ksBp5wB3ZM0l5giLL1tbzwkOaxpqzpAgpYl0Wim7Htgu6+rvYjaed71hX4FlL7LzjAbclKLSkBXeYpSxFTkJeHGZ4FsulJzCSFljwf5MgkdcTgdzCs1im2mfjyfMJyurnFgRlLF/tLQjK66d8QZn9RAiqo55Xfc+b20/xOShvDb3lAvIIyu4nlSCh6VDZHjDOpBEkNB0qv55EgoQms5TgJ80AKpl58/nrH8XWHITHbbRCOagMP9uLmNcfPRJYYKmI8tWG1EFo3IYmejpUKX6KjYMoyP3rYvwECvJYBy8uUCykhm5TCYoNFMvxk0ZQZDNfwAPGmSSCIgLFKulr0gAKy0EFla2eVA+rYfPmy8o8mkTNfGCg+H4EbU5O1zwF+ilBkHpv2khN7xIne4+iemwtrOGakeathn+gWLAaQ+YexeL9pBHkv8DS7gTN54RfCpO9c1D5ftIIKnKBpUAiOu1djVSBCywFUkAcVDYUBAgRpMuPx1qlJ0ekVN0M2wWd9F3XzrEvx6p6ePn5B1gJxevkflcouFdg5h4Pe3s29+xaSlH97mg8unLaPgV5rLyg883Lp6/uvfYqaMhBjrxhlsd5+8+9114F9a9Wa9cL1nHZCvdKQvsU5DXAo6/CwWvqfQoShIIk0rwtQWIrUPlfym0JUpgn9JPAlJ9dMWnmzQgqZzMvmc9uhEkrZlomVwjoNVBvZ0xykAltnKu2ew3U2xerQNFdB3kN1NsVAd0d74ub6eHKBQUBbM9i762acbIKFKsnj0V/3xG2QNHZ2fPesAWKQcu57pVVoKhyEAWdsdRBW8NlPWjowSRRDT1qy43gpNr25advIklZE4csA8Uu8+A/j7C4ku5k+q9JqJ4A3Ruw3ghOalyPJjopa+KY+DjILPXeFUtTSI/37XojOKnxLzDEJ2VL3AOpQLH7HxmvYL0RnJQq+LrNEEjqwjcAKUFduRzfmK03gpNqh39kkrJ9AxASpGp4U6y7n+uN4KT0F+pWZJKyfIOQEXQa6r54QfOk9DehgixJrb6BiAgyEYJIEVsk1Q7/iCRlSRwiIagfHSxRSS+TUh8CK+l1UrbEIQKChrfV8c38OinFKaSZtyRlTRwiEQcND//RgaIlqXYsHrFJ2ROHxAuqTSeSOuE4Sn+9EZzUWFvEJmVPHMIeRQAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBCAggAUBKAgAAUBKAhAQQAKAlAQgIIAFASgIAAFAQoU9Pq5pHHsJQiaDyQ4DoN1Z9SrL2dHnZLNLylO0PHun8//Hpb3a5k/Mj3KvRpNFKUJejk8dUVsNS/UYmDfgrpy9OHLMBKl23j59MdBFyIjqFWr0XxRA6RrXeCWf2a5Hg4/6tlb6ted0tpaOCPJI+ioR0B3dzhsdLf4pCfEvj5+/G4EPapcVPcjn+ZZ5Hz4vdlF/7qejZKSIosgM0rwOIzp1hvqxtQ8LJUb1Og4XeuYqud0920maDxKr3mkPqlfj/vKXmsWQeOgunHD3LOpVtSckT7PmC9UsZsKOo/Ja/VUBSNo3Ff2WrMIqoc7HDf6oblGUFdJ93nmNEwSnQkaj1K1zt3ffQ4a95W91lJy0FxQ93GSg9pFMzXPd0MRS7TqSMY6qB7nlQx1UNe6d7fZCVI/lZLRi6UOqnu/p2qog5I09ZlbMdXymFZMb/St2PfH+/5+9UIQx17XyPkodYCusB7O+8pear446O4vM/rdxEGH3w6m+tDzAu/HPFObSX6L7DHEQXo8r3JyHOIg8dmkGSPpaYs8bXz4sGp0zB6vxFtnMfLkoNOyPfYQpCLIcaz89SjhYbVoKAhAQQAKAlAQgIIAFASgIAAFASgIQEEACgJQEICCABQEoCAABQEoCEBBAAoCUBDgfxJciuFEpb1LAAAAAElFTkSuQmCC" /><!-- --></p>
+<p>Of course, these data are already seasonally adjusted, so adjusting again makes little difference.</p>
+</div>
+<div id="mixed-frequency-data" class="section level2">
+<h2>Mixed frequency data</h2>
+<p><strong>dateutils</strong> is built around handling mixed frequency data. In particular, the package allows you to easily build mixed frequency models incorporating all available information to date without worrying about bridge equations. We accomplish this by identifying the pattern of missing observations in the tail of the data, and replicating that pattern in the historical data, to generate contemporaneous right hand side (RHS) variables, as well as the usual lagged RHS variables. The resulting data set is uniform frequency, allowing the use of any of the standard statistical models available in R. We can illustrate this process again using the built in data <code>fred</code>. We will construct a nowcast of GDP, the lowest frequency variable in the data, using the other the other three monthly, weekly, and daily series. To begin, we can look at the tail of each of the four series.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">tail</span>(fred[series_name <span class="op">==</span><span class="st"> &quot;gdp constant prices&quot;</span>], <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##            series_name   ref_date    value       country   pub_date pub_lag
+## 1: gdp constant prices 2020-09-30 18596.52 united states 2020-10-30      30
+## 2: gdp constant prices 2020-12-31 18794.43 united states 2021-01-29      29</code></pre>
+<p>The last observation we have for GDP is Q4 2020, thus our nowcast will be for Q1 2021 (the <code>as_of</code> date for this data is February 26 2021, which was a Friday). Looking next at the monthly data</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">tail</span>(fred[series_name <span class="op">==</span><span class="st"> &quot;advance retail sales&quot;</span>], <span class="dv">4</span>)</span></code></pre></div>
+<pre><code>##             series_name   ref_date  value       country   pub_date pub_lag
+## 1: advance retail sales 2020-10-31 493991 united states 2020-11-18      18
+## 2: advance retail sales 2020-11-30 488652 united states 2020-12-17      17
+## 3: advance retail sales 2020-12-31 484782 united states 2021-01-16      16
+## 4: advance retail sales 2021-01-31 520162 united states 2021-02-18      18</code></pre>
+<p>In this case, our contemporaneous data will include the first month in the quarter. Lagged data (i.e. Q4 2020) is complete. Looking next at weekly data</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">tail</span>(fred[series_name <span class="op">==</span><span class="st"> &quot;initial jobless claims&quot;</span>])</span></code></pre></div>
+<pre><code>##               series_name   ref_date  value       country   pub_date pub_lag
+## 1: initial jobless claims 2021-01-01 781000 united states 2021-01-21      20
+## 2: initial jobless claims 2021-01-08 904000 united states 2021-01-28      20
+## 3: initial jobless claims 2021-01-15 886000 united states 2021-02-04      20
+## 4: initial jobless claims 2021-01-22 836000 united states 2021-02-11      20
+## 5: initial jobless claims 2021-01-29 837000 united states 2021-02-18      20
+## 6: initial jobless claims 2021-02-05 863000 united states 2021-02-25      20</code></pre>
+<p>Here we observe the first six weeks of the quarter for Q1 2021. And finally, for daily data</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">tail</span>(fred[series_name <span class="op">==</span><span class="st"> &quot;t bill spread 10y 3m&quot;</span>], <span class="dv">3</span>)</span></code></pre></div>
+<pre><code>##             series_name   ref_date value       country   pub_date pub_lag
+## 1: t bill spread 10y 3m 2021-02-23  1.33 united states 2021-02-24       1
+## 2: t bill spread 10y 3m 2021-02-24  1.35 united states 2021-02-25       1
+## 3: t bill spread 10y 3m 2021-02-25  1.50 united states 2021-02-26       1</code></pre>
+<p>We observe through February 25th, which in this case means 37 observations (values for weekends are not observed). The function <code>process_MF()</code> operates by calculating how many observations we have for the contemporaneous (nowcast, or one step ahead of the last observation of left hand side (LHS) data) period for each series in the data. In this case, since we observe the first 37 days for t bill spreads, the contemporaneous variable for t bill spreads will aggregate the first 37 observations in the historical data as well. If an early observation was missing, say the 22nd, than this observation would also be omitted when calculating historical aggregates. This contemporaneous variable will be appended with a 0 in the resulting data; the variable at one lag will be appended with a 1, and so on. If lagged periods are missing in the tail of the data the pattern of missing observations will be replicated in the same way.</p>
+<p>We can verify this approach by running the function.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>MF &lt;-<span class="st"> </span><span class="kw">process_MF</span>(fred[series_name <span class="op">==</span><span class="st"> &quot;gdp constant prices&quot;</span>], fred[series_name <span class="op">!=</span><span class="st"> &quot;gdp constant prices&quot;</span>],</span>
+<span id="cb16-2"><a href="#cb16-2"></a>                 <span class="dt">LHS_lags =</span> <span class="dv">3</span>, <span class="dt">RHS_lags =</span> <span class="dv">3</span>) </span></code></pre></div>
+<p>Here we are using three lags of LHS variables and three lags of RHS varialbes. Note that data must be entered in long format. Aside from being more efficient for mixed frequency data (i.e. avoiding a lot of <code>NA</code> entries for low frequency data), this allows for backtesting by censoring data using the <code>as_of</code> argument. Required columns are <code>ref_date</code>, <code>series_name</code>, and <code>value</code>. If your data has different column names, you will have to inform the function using the arguments <code>date_name</code>, <code>id_name</code>, and <code>value_name</code>. If you wish to backtest your data using <code>as_of</code> you must also include the column <code>pub_date</code>, or inform the function which column contains publication dates using <code>pub_date_name</code>.</p>
+<p>By default <code>process_MF()</code> returns data in long format. If you wish to have the data in matrix format, you can set <code>return_dt = FALSE</code>. Since <code>dateutils</code> is built on <code>data.table</code>, we can also transform the output to wide format as follows</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">library</span>(data.table)</span>
+<span id="cb17-2"><a href="#cb17-2"></a>dt_wide &lt;-<span class="st"> </span><span class="kw">dcast</span>(MF, ref_date <span class="op">~</span><span class="st"> </span>series_name, <span class="dt">value.var =</span> <span class="st">&quot;value&quot;</span>)</span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="kw">tail</span>(dt_wide)</span></code></pre></div>
+<pre><code>##      ref_date gdp constant prices 0 gdp constant prices 1 gdp constant prices 2
+## 1: 2020-09-30              18596.52              17302.51              19010.85
+## 2: 2020-12-31              18794.43              18596.52              17302.51
+## 3: 2021-03-31                    NA              18794.43              18596.52
+## 4: 2021-06-30                    NA                    NA              18794.43
+## 5: 2021-09-30                    NA                    NA                    NA
+## 6: 2021-12-31                    NA                    NA                    NA
+##    gdp constant prices 3 advance retail sales 0 initial jobless claims 0
+## 1:              19253.96                 481627                1243833.3
+## 2:              19010.85                 493991                 779000.0
+## 3:              17302.51                 520162                 851166.7
+## 4:              18596.52                     NA                       NA
+## 5:              18794.43                     NA                       NA
+## 6:                    NA                     NA                       NA
+##    t bill spread 10y 3m 0 advance retail sales 1 initial jobless claims 1
+## 1:              0.5086486               433592.3                2716615.4
+## 2:              0.7275676               486223.3                1041076.9
+## 3:              1.0983784               489141.7                 783000.0
+## 4:                     NA               520162.0                 851166.7
+## 5:                     NA                     NA                       NA
+## 6:                     NA                     NA                       NA
+##    t bill spread 10y 3m 1 advance retail sales 2 initial jobless claims 2
+## 1:              0.5453968               451492.3                 867846.2
+## 2:              0.5371875               433592.3                2716615.4
+## 3:              0.7716129               486223.3                1041076.9
+## 4:              1.0983784               489141.7                 783000.0
+## 5:                     NA               520162.0                 851166.7
+## 6:                     NA                     NA                       NA
+##    t bill spread 10y 3m 2 advance retail sales 3 initial jobless claims 3
+## 1:              0.2609677               457066.3                 218923.1
+## 2:              0.5453968               451492.3                 867846.2
+## 3:              0.5371875               433592.3                2716615.4
+## 4:              0.7716129               486223.3                1041076.9
+## 5:              1.0983784               489141.7                 783000.0
+## 6:                     NA               520162.0                 851166.7
+##    t bill spread 10y 3m 3
+## 1:              0.1843548
+## 2:              0.2609677
+## 3:              0.5453968
+## 4:              0.5371875
+## 5:              0.7716129
+## 6:              1.0983784</code></pre>
+<p>Checking the result for advance retail sales is simple as we are only using the first observation in the quarter. Thus for Q1 2021 it is 520162; for the first month in Q4 2020 it is 493991. <code>process_MF()</code> allows for multiple LHS variables, but all LHS variables must be the same frequency (i.e. quarterly, monthly, etc.).</p>
+<p>So far we have transformed our mixed frequency data into meaningful, up-to-date uniform frequency data. However, several series are still non-stationary. Before modeling, will will have to process these data to ensure stationarity and thereby consistent results. We can do this using the function <code>process()</code>. Instructions on how to process the data are in a library file, in this case called <code>fredlib</code>.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">print</span>(fredlib)</span></code></pre></div>
+<pre><code>##          country            series_name needs_SA frequency     type        unit
+## 1: united states   advance retail sales        0   monthly business USD Million
+## 2: united states    gdp constant prices        0 quarterly      gdp USD Billion
+## 3: united states initial jobless claims        0    weekly   labour    Thousand
+## 4: united states   t bill spread 10y 3m        0     daily  markets     percent
+##    source take_logs take_diffs
+## 1:   FRED         1          1
+## 2:   FRED         1          1
+## 3:   FRED         1          0
+## 4:   FRED         0          0</code></pre>
+<p>Required columns are <code>series_name</code>, <code>take_logs</code>, and <code>take_diffs</code>. Optional columns are <code>country</code>, <code>needs_SA</code>, <code>detrend</code>, <code>center</code>, and <code>scale</code>. Other columns, such as <code>type</code> above, are ignored. Unique identification of each series can come from <code>series_name</code> alone or <code>series_name</code> and <code>country</code> pairs. Note that when we transformed the mixed frequency data using <code>process_MF()</code> we appended series names with 0 for contemporaneous data, 1, for one lag, and so on. By default, the argument <code>ignore_numeric_names = TRUE</code> so that <code>process()</code> correctly identifies each series from the library <code>fredlib</code>.</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>dt_processed &lt;-<span class="st"> </span><span class="kw">process</span>(MF, fredlib)</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="kw">print</span>(dt_processed[<span class="dv">1</span><span class="op">:</span><span class="dv">4</span>])</span></code></pre></div>
+<pre><code>##      ref_date           series_name      value level_value low_frequency_trend
+## 1: 2000-03-31 gdp constant prices 0         NA    9.466855         0.003471811
+## 2: 2000-06-30 gdp constant prices 0  1.0596728    9.485001         0.003844023
+## 3: 2000-09-30 gdp constant prices 0 -0.1389716    9.486336         0.004295838
+## 4: 2000-12-31 gdp constant prices 0  0.1701025    9.492545         0.004719393
+##    standardize_center standardize_scale
+## 1:      -0.0009596734        0.01440224
+## 2:      -0.0009596734        0.01440224
+## 3:      -0.0009596734        0.01440224
+## 4:      -0.0009596734        0.01440224</code></pre>
+<p>Output from dt_processed includes all of the information one would need to convert data back to levels. If we had seasonally adjusted any of the series, output would also include the column <code>seasonal_factor</code>.</p>
+<p>Now that we have stationary, uniform frequency data, we can use any of the standard econometric models. For example,</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>X &lt;-<span class="st"> </span><span class="kw">dcast</span>(dt_processed, ref_date <span class="op">~</span><span class="st"> </span>series_name, <span class="dt">value.var =</span> <span class="st">&quot;value&quot;</span>)</span>
+<span id="cb23-2"><a href="#cb23-2"></a>out &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="st">`</span><span class="dt">gdp constant prices 0</span><span class="st">`</span> <span class="op">~</span><span class="st"> `</span><span class="dt">advance retail sales 0</span><span class="st">`</span> <span class="op">+</span><span class="st"> </span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="st">          `</span><span class="dt">initial jobless claims 0</span><span class="st">`</span> <span class="op">+</span><span class="st"> `</span><span class="dt">t bill spread 10y 3m 0</span><span class="st">`</span>, <span class="dt">data =</span> X)</span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="kw">summary</span>(out)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = `gdp constant prices 0` ~ `advance retail sales 0` + 
+##     `initial jobless claims 0` + `t bill spread 10y 3m 0`, data = X)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.25144 -0.21286 -0.05089  0.26860  1.30541 
+## 
+## Coefficients:
+##                             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                 0.001103   0.047947   0.023    0.982    
+## `advance retail sales 0`    0.836399   0.049131  17.024   &lt;2e-16 ***
+## `initial jobless claims 0` -0.221607   0.052786  -4.198    7e-05 ***
+## `t bill spread 10y 3m 0`    0.064252   0.048809   1.316    0.192    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.4365 on 79 degrees of freedom
+##   (5 observations deleted due to missingness)
+## Multiple R-squared:  0.8164, Adjusted R-squared:  0.8094 
+## F-statistic: 117.1 on 3 and 79 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+<div id="other-functions" class="section level2">
+<h2>Other Functions</h2>
+<p><strong>dateutils</strong> additionally exports a large number of small functions which names that are hopefully self explanatory. We can see the complete list as follows:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">ls</span>(<span class="st">&quot;package:dateutils&quot;</span>)</span></code></pre></div>
+<pre><code>##  [1] &quot;Diff&quot;                    &quot;add_forecast_dates&quot;     
+##  [3] &quot;agg_to_freq&quot;             &quot;agg_to_freq_wide&quot;       
+##  [5] &quot;allNA&quot;                   &quot;all_finite&quot;             
+##  [7] &quot;any_finite&quot;              &quot;can_seasonal&quot;           
+##  [9] &quot;col_to_list&quot;             &quot;comp_form&quot;              
+## [11] &quot;count_obs&quot;               &quot;day&quot;                    
+## [13] &quot;end_of_period&quot;           &quot;end_of_year&quot;            
+## [15] &quot;extract_basic_character&quot; &quot;extract_character&quot;      
+## [17] &quot;extract_numeric&quot;         &quot;fill_forward&quot;           
+## [19] &quot;first_of_month&quot;          &quot;first_of_quarter&quot;       
+## [21] &quot;first_previous_quarter&quot;  &quot;fred&quot;                   
+## [23] &quot;fredlib&quot;                 &quot;get_data_frq&quot;           
+## [25] &quot;get_from_list&quot;           &quot;index_by_friday&quot;        
+## [27] &quot;is_in&quot;                   &quot;last_in_month&quot;          
+## [29] &quot;last_in_quarter&quot;         &quot;last_in_week&quot;           
+## [31] &quot;last_in_year&quot;            &quot;last_obs&quot;               
+## [33] &quot;limit_character&quot;         &quot;long_run_var&quot;           
+## [35] &quot;match_index&quot;             &quot;match_ts_dates&quot;         
+## [37] &quot;mean_na&quot;                 &quot;month_days&quot;             
+## [39] &quot;number_finite&quot;           &quot;numdum&quot;                 
+## [41] &quot;pct_chng&quot;                &quot;pct_response&quot;           
+## [43] &quot;process&quot;                 &quot;process_MF&quot;             
+## [45] &quot;process_wide&quot;            &quot;rollmax&quot;                
+## [47] &quot;rollmean&quot;                &quot;rollmin&quot;                
+## [49] &quot;row_to_list&quot;             &quot;run_sa&quot;                 
+## [51] &quot;sd_na&quot;                   &quot;seas_df_long&quot;           
+## [53] &quot;seas_df_wide&quot;            &quot;spline_fill&quot;            
+## [55] &quot;spline_fill_trend&quot;       &quot;stack_obs&quot;              
+## [57] &quot;sum_na&quot;                  &quot;to_ts&quot;                  
+## [59] &quot;total_response&quot;          &quot;try_detrend&quot;            
+## [61] &quot;try_sa&quot;                  &quot;try_trend&quot;              
+## [63] &quot;ts_to_df&quot;</code></pre>
+<p>As a few more examples, we can find the last date of a time period using one of the following functions:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a>dates &lt;-<span class="st"> </span><span class="kw">seq.Date</span>(<span class="dt">from =</span> <span class="kw">as.Date</span>(<span class="st">&quot;2021-01-01&quot;</span>), <span class="dt">to =</span> <span class="kw">as.Date</span>(<span class="st">&quot;2021-06-30&quot;</span>), <span class="dt">by =</span> <span class="st">&quot;day&quot;</span>)</span>
+<span id="cb27-2"><a href="#cb27-2"></a>weekvals &lt;-<span class="st"> </span><span class="kw">end_of_period</span>(dates, <span class="dt">period =</span> <span class="st">&quot;week&quot;</span>)</span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="kw">unique</span>(<span class="kw">weekdays</span>(weekvals))</span></code></pre></div>
+<pre><code>## [1] &quot;Friday&quot;</code></pre>
+<p>or, to shift dates forward one month,</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>monthvals &lt;-<span class="st"> </span><span class="kw">end_of_period</span>(dates, <span class="dt">period =</span> <span class="st">&quot;month&quot;</span>, <span class="dt">shift =</span> <span class="dv">1</span>)</span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="kw">unique</span>(monthvals)</span></code></pre></div>
+<pre><code>## [1] &quot;2021-02-28&quot; &quot;2021-03-31&quot; &quot;2021-04-30&quot; &quot;2021-05-31&quot; &quot;2021-06-30&quot;
+## [6] &quot;2021-07-31&quot;</code></pre>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
